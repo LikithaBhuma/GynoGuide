@@ -1,11 +1,9 @@
-// api/chat.js — Vercel serverless function (runs on server, no CORS)
+// api/chat.js — Vercel serverless function
 export default async function handler(req, res) {
-  // Allow requests from your app
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
   }
