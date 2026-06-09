@@ -1,0 +1,141 @@
+/* DiseaseDetailPage.css */
+.detail-page { padding-bottom: 4rem; }
+.back-btn { margin: 1.5rem 0 0; color: var(--slate-mid); }
+
+.detail-hero {
+  background: linear-gradient(160deg, var(--warm-white), var(--rose-50));
+  padding: 2rem 0 2.5rem;
+  border-bottom: 1px solid var(--rose-100);
+  margin-bottom: 2.5rem;
+}
+.detail-hero__icon { font-size: 3rem; line-height: 1; margin-bottom: 0.75rem; }
+.detail-hero__meta { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.detail-hero h1 { margin-bottom: 0.75rem; }
+.detail-hero__summary { font-size: 1.05rem; max-width: 640px; margin-bottom: 1.5rem; }
+
+.detail-hero__stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.detail-stat { display: flex; flex-direction: column; gap: 0.15rem; }
+.detail-stat__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate-soft);
+}
+.detail-stat__value { font-size: 0.95rem; font-weight: 600; color: var(--plum-800); }
+
+/* Content layout */
+.detail-content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.detail-main { display: flex; flex-direction: column; gap: 2rem; }
+
+.detail-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+  color: var(--plum-700);
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rose-100);
+}
+.detail-section h2 svg { color: var(--rose-400); }
+.detail-section p { font-size: 0.95rem; line-height: 1.75; }
+
+.detail-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.detail-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--slate-mid);
+  line-height: 1.5;
+}
+.detail-list li svg { color: var(--rose-400); flex-shrink: 0; margin-top: 3px; }
+
+/* Aside */
+.detail-aside { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.aside-card {
+  background: var(--warm-white);
+  border: 1.5px solid var(--rose-100);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+}
+.aside-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--plum-800);
+  margin-bottom: 1rem;
+}
+.aside-card h3 svg { color: var(--rose-400); }
+
+.aside-meds { display: flex; flex-direction: column; gap: 0.6rem; }
+.aside-med {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--rose-100);
+  text-decoration: none;
+  transition: all var(--transition);
+  background: var(--cream);
+}
+.aside-med:hover { background: var(--rose-50); border-color: var(--rose-200); }
+.aside-med__icon { font-size: 1.25rem; }
+.aside-med > div { flex: 1; }
+.aside-med strong { display: block; font-size: 0.85rem; color: var(--plum-800); }
+.aside-med p { font-size: 0.75rem; color: var(--slate-soft); margin: 0; }
+.aside-med > svg { color: var(--slate-soft); }
+
+.aside-card--ai {
+  background: linear-gradient(135deg, var(--rose-50), #f3e8f0);
+  border-color: var(--rose-200);
+  text-align: center;
+}
+.aside-ai-icon {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--rose-500), var(--plum-700));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+.aside-card--ai h3 { justify-content: center; }
+.aside-card--ai p { font-size: 0.85rem; margin-bottom: 1rem; }
+
+.aside-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: var(--rose-50);
+  border: 1px solid var(--rose-100);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--slate-soft);
+}
+.aside-disclaimer svg { color: var(--rose-400); flex-shrink: 0; margin-top: 1px; }
+.aside-disclaimer p { margin: 0; }
+
+@media (max-width: 900px) {
+  .detail-content { grid-template-columns: 1fr; }
+  .detail-aside { order: -1; }
+}
