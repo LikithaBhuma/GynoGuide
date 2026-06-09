@@ -28,14 +28,20 @@ export async function sendMessage(messages) {
     throw new Error('API_KEY_MISSING')
   }
 
+  // In dev: use Vite proxy to avoid CORS
+  // In production (Vercel): call OpenRouter directly (CORS is allowed from Vercel servers)
+  const url = import.meta.env.DEV
+    ? '/openrouter/api/v1/chat/completions'
+    : 'https://openrouter.ai/api/v1/chat/completions'
+
   let response
   try {
-    response = await fetch('/openrouter/api/v1/chat/completions', {
+    response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'http://localhost:3000',
+        'HTTP-Referer': import.meta.env.DEV ? 'http://localhost:3000' : 'https://gynoguide-ai.vercel.app',
         'X-Title': 'GynoGuideAI',
       },
       body: JSON.stringify({
@@ -51,19 +57,18 @@ export async function sendMessage(messages) {
     throw new Error(`Network error: ${networkErr.message}`)
   }
 
-  // Read raw text first — never assume it's valid JSON
   const rawText = await response.text()
-  console.log('OpenRouter raw response:', response.status, rawText)
+  console.log('OpenRouter status:', response.status)
 
   if (!rawText) {
-    throw new Error(`Empty response from server (status ${response.status}). Check Vite proxy in vite.config.js.`)
+    throw new Error(`Empty response from server (status ${response.status})`)
   }
 
   let data
   try {
     data = JSON.parse(rawText)
   } catch {
-    throw new Error(`Invalid JSON from server: ${rawText.slice(0, 200)}`)
+    throw new Error(`Server returned non-JSON: ${rawText.slice(0, 100)}`)
   }
 
   if (!response.ok) {
