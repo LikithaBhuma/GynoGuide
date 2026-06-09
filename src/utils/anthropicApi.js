@@ -28,37 +28,33 @@ export async function sendMessage(messages) {
     throw new Error('API_KEY_MISSING')
   }
 
-  // In dev: use Vite proxy to avoid CORS
-  // In production (Vercel): call OpenRouter directly (CORS is allowed from Vercel servers)
+  // Dev: Vite proxy → OpenRouter
+  // Production: Vercel serverless function /api/chat → OpenRouter
   const url = import.meta.env.DEV
     ? '/openrouter/api/v1/chat/completions'
-    : 'https://openrouter.ai/api/v1/chat/completions'
+    : '/api/chat'
+
+  const payload = {
+    model: 'meta-llama/llama-3.2-3b-instruct:free',
+    max_tokens: 1024,
+    messages: [
+      { role: 'system', content: GYNECOLOGY_SYSTEM_PROMPT },
+      ...messages.map(m => ({ role: m.role, content: m.content })),
+    ],
+  }
 
   let response
   try {
     response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': import.meta.env.DEV ? 'http://localhost:3000' : 'https://gynoguide-ai.vercel.app',
-        'X-Title': 'GynoGuideAI',
-      },
-      body: JSON.stringify({
-        model: 'meta-llama/llama-3.2-3b-instruct:free',
-        max_tokens: 1024,
-        messages: [
-          { role: 'system', content: GYNECOLOGY_SYSTEM_PROMPT },
-          ...messages.map(m => ({ role: m.role, content: m.content })),
-        ],
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     })
   } catch (networkErr) {
     throw new Error(`Network error: ${networkErr.message}`)
   }
 
   const rawText = await response.text()
-  console.log('OpenRouter status:', response.status)
 
   if (!rawText) {
     throw new Error(`Empty response from server (status ${response.status})`)
@@ -72,7 +68,7 @@ export async function sendMessage(messages) {
   }
 
   if (!response.ok) {
-    throw new Error(data?.error?.message || `OpenRouter error ${response.status}`)
+    throw new Error(data?.error?.message || `Error ${response.status}`)
   }
 
   return data.choices[0].message.content
