@@ -2,19 +2,24 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
   const apiKey = process.env.VITE_OPENROUTER_API_KEY
   if (!apiKey) {
     return res.status(500).json({ error: { message: 'API key not configured on server' } })
+  }
+
+  // Parse body manually if needed
+  let body = req.body
+  if (!body) {
+    return res.status(400).json({ error: { message: 'Empty request body' } })
+  }
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body) } catch { return res.status(400).json({ error: { message: 'Invalid JSON body' } }) }
   }
 
   try {
@@ -26,10 +31,13 @@ export default async function handler(req, res) {
         'HTTP-Referer': 'https://gyno-guide.vercel.app',
         'X-Title': 'GynoGuideAI',
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(body),
     })
 
-    const data = await response.json()
+    const text = await response.text()
+    let data
+    try { data = JSON.parse(text) } catch { return res.status(500).json({ error: { message: `OpenRouter non-JSON: ${text.slice(0, 200)}` } }) }
+
     return res.status(response.status).json(data)
   } catch (err) {
     return res.status(500).json({ error: { message: err.message } })
