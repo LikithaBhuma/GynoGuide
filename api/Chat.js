@@ -1,8 +1,8 @@
-// api/chat.js — Vercel serverless function
-export default async function handler(req, res) {
+// api/chat.js
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
@@ -10,16 +10,12 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.VITE_OPENROUTER_API_KEY
   if (!apiKey) {
-    return res.status(500).json({ error: { message: 'API key not configured on server' } })
+    return res.status(500).json({ error: { message: 'API key not configured' } })
   }
 
-  // Parse body manually if needed
   let body = req.body
-  if (!body) {
-    return res.status(400).json({ error: { message: 'Empty request body' } })
-  }
   if (typeof body === 'string') {
-    try { body = JSON.parse(body) } catch { return res.status(400).json({ error: { message: 'Invalid JSON body' } }) }
+    try { body = JSON.parse(body) } catch(e) {}
   }
 
   try {
@@ -36,8 +32,11 @@ export default async function handler(req, res) {
 
     const text = await response.text()
     let data
-    try { data = JSON.parse(text) } catch { return res.status(500).json({ error: { message: `OpenRouter non-JSON: ${text.slice(0, 200)}` } }) }
-
+    try {
+      data = JSON.parse(text)
+    } catch(e) {
+      return res.status(500).json({ error: { message: `Bad response: ${text.slice(0, 100)}` } })
+    }
     return res.status(response.status).json(data)
   } catch (err) {
     return res.status(500).json({ error: { message: err.message } })
